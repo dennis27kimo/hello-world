@@ -1,0 +1,497 @@
+{
+	"info": {
+		"_postman_id": "988cb9ce-2ddb-4bcb-b08a-c45041345950",
+		"name": "Trello",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "创建看板",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "198cbc2a-20fd-433a-9f22-181cc078cd4e",
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"const response = pm.response.json();",
+							"console.log(pm.environment.get(\"gao\"));",
+							"",
+							"pm.test(\"验证看板已经创建\", function () {",
+							"    pm.expect(response.name).to.eql(pm.environment.get(\"boardName\"));",
+							"    pm.expect(response.closed).to.eql(false);",
+							"});",
+							"pm.test(\"验证私有看板已经创建\", function () {",
+							"    pm.expect(response.prefs.permissionLevel).to.eql( \"private\");",
+							"});",
+							"pm.globals.set(\"boardID\", response.id);",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "ff4b2f99-fd29-4985-b9d3-723667c29ef6",
+						"exec": [
+							"",
+							"pm.environment.set(\"boardName\", getRandomBoardName());",
+							"",
+							"function getRandomBoardName(){",
+							"    const boardName = \"my board name \" + parseInt(Math.random() * 10000);",
+							"    console.log(boardName);",
+							"    return boardName;",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "https://api.trello.com/1/boards/?name={{boardName}}&key={{trelloKey}}&token={{trelloToken}}&defaultLists=false",
+					"protocol": "https",
+					"host": [
+						"api",
+						"trello",
+						"com"
+					],
+					"path": [
+						"1",
+						"boards",
+						""
+					],
+					"query": [
+						{
+							"key": "name",
+							"value": "{{boardName}}"
+						},
+						{
+							"key": "key",
+							"value": "{{trelloKey}}"
+						},
+						{
+							"key": "token",
+							"value": "{{trelloToken}}"
+						},
+						{
+							"key": "defaultLists",
+							"value": "false"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "创建TODO列表",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "3d6f34f2-a1c4-4e33-8919-63bb9a3c9c74",
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"const response = pm.response.json();",
+							"",
+							"pm.test(\"验证列表已经创建\", function () {",
+							"    pm.expect(response.name).to.eql(\"TODO\");",
+							"    pm.expect(response.closed).to.eql(false);",
+							"});",
+							"pm.test(\"列表在看板里面创建了\", function () {",
+							"    pm.expect(response.idBoard).to.eql(pm.globals.get(\"boardID\"));",
+							"});",
+							"// pm.globals.unset(\"boardID\");",
+							"pm.globals.set(\"ToDolistID\", response.id);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "https://api.trello.com/1/lists?name=TODO&idBoard={{boardID}}&key={{trelloKey}}&token={{trelloToken}}",
+					"protocol": "https",
+					"host": [
+						"api",
+						"trello",
+						"com"
+					],
+					"path": [
+						"1",
+						"lists"
+					],
+					"query": [
+						{
+							"key": "name",
+							"value": "TODO"
+						},
+						{
+							"key": "idBoard",
+							"value": "{{boardID}}"
+						},
+						{
+							"key": "key",
+							"value": "{{trelloKey}}"
+						},
+						{
+							"key": "token",
+							"value": "{{trelloToken}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "创建DO\bNE列表",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "945dc2b1-77c1-4d7e-b30f-8dc74cb6660c",
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"const response = pm.response.json();",
+							"",
+							"pm.test(\"验证列表已经创建\", function () {",
+							"    pm.expect(response.name).to.eql(\"DONE\");",
+							"    pm.expect(response.closed).to.eql(false);",
+							"});",
+							"pm.test(\"列表在看板里面创建了\", function () {",
+							"    pm.expect(response.idBoard).to.eql(pm.globals.get(\"boardID\"));",
+							"});",
+							"// pm.globals.unset(\"boardID\");",
+							"// pm.globals.set(\"listID\", response.id);",
+							"pm.globals.set(\"DoneListID\", response.id);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "https://api.trello.com/1/lists?name=DONE&idBoard={{boardID}}&key={{trelloKey}}&token={{trelloToken}}",
+					"protocol": "https",
+					"host": [
+						"api",
+						"trello",
+						"com"
+					],
+					"path": [
+						"1",
+						"lists"
+					],
+					"query": [
+						{
+							"key": "name",
+							"value": "DONE"
+						},
+						{
+							"key": "idBoard",
+							"value": "{{boardID}}"
+						},
+						{
+							"key": "key",
+							"value": "{{trelloKey}}"
+						},
+						{
+							"key": "token",
+							"value": "{{trelloToken}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "在TODO列表里创建Learn Postman卡片",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "0e8af1a1-ea2f-45d6-bf38-bc7c934b30aa",
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"const response = pm.response.json();",
+							"",
+							"pm.test(\"验证卡片已经创建\", function () {",
+							"    pm.expect(response.name).to.eql(\"Learn Postman\");",
+							"    pm.expect(response.closed).to.eql(false);",
+							"});",
+							"",
+							"pm.test(\"卡片在列表里面创建了\", function () {",
+							"    pm.expect(response.idList).to.eql(pm.globals.get(\"ToDolistID\"));",
+							"    //console.log(response.idList);",
+							"    //console.log(listID);",
+							"});",
+							"",
+							"pm.test(\"投票为0\", function () {",
+							"    pm.expect(response.badges.votes).to.eql(0);",
+							"});",
+							"pm.test(\"附件为空\", function () {",
+							"    pm.expect(response.attachments).to.eql([]);",
+							"});",
+							"",
+							"pm.test(\"卡片在看板里面创建了\", function () {",
+							"    pm.expect(response.idBoard).to.eql(pm.globals.get(\"boardID\"));",
+							"});",
+							"",
+							"pm.globals.set(\"cardID\", response.id);",
+							"",
+							"// pm.globals.unset(\"listID\");",
+							"// pm.globals.unset(\"boardID\");"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "https://api.trello.com/1/cards?name=Learn Postman&idList={{ToDolistID}}&key={{trelloKey}}&token={{trelloToken}}",
+					"protocol": "https",
+					"host": [
+						"api",
+						"trello",
+						"com"
+					],
+					"path": [
+						"1",
+						"cards"
+					],
+					"query": [
+						{
+							"key": "name",
+							"value": "Learn Postman"
+						},
+						{
+							"key": "idList",
+							"value": "{{ToDolistID}}"
+						},
+						{
+							"key": "key",
+							"value": "{{trelloKey}}"
+						},
+						{
+							"key": "token",
+							"value": "{{trelloToken}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Move the card from the TODO list to the DONE list",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "f5d43c00-e79d-40c2-8f31-6f3f3a581685",
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"const response = pm.response.json();",
+							"",
+							"pm.test(\"验证卡片名字还是Learn Postman\", function () {",
+							"    pm.expect(response.name).to.eql(\"Learn Postman\");",
+							"    pm.expect(response.closed).to.eql(false);",
+							"});",
+							"pm.test(\"卡片移动到了DONE list\", function () {",
+							"    pm.expect(response.idList).to.eql(pm.globals.get(\"DoneListID\"));",
+							"});",
+							"// pm.test(\"卡片在列表里面创建了\", function () {",
+							"//     pm.expect(response.idList).to.eql(pm.globals.get(\"listID\"));",
+							"// });",
+							"",
+							"",
+							"",
+							"pm.globals.unset(\"cardID\");",
+							"pm.globals.unset(\"listID\");",
+							"pm.globals.unset(\"doneListID\");",
+							"// pm.globals.unset(\"boardID\");"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "https://api.trello.com/1/cards/{{cardID}}?name=Learn Postman&key={{trelloKey}}&token={{trelloToken}}&idList={{DoneListID}}",
+					"protocol": "https",
+					"host": [
+						"api",
+						"trello",
+						"com"
+					],
+					"path": [
+						"1",
+						"cards",
+						"{{cardID}}"
+					],
+					"query": [
+						{
+							"key": "name",
+							"value": "Learn Postman"
+						},
+						{
+							"key": "key",
+							"value": "{{trelloKey}}"
+						},
+						{
+							"key": "token",
+							"value": "{{trelloToken}}"
+						},
+						{
+							"key": "idList",
+							"value": "{{DoneListID}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "删除看板",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "e1f3f5cc-e087-4ea3-9240-69a4586af12c",
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"const response = pm.response.json();",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "https://api.trello.com/1/boards/{{boardID}}?key={{trelloKey}}&token={{trelloToken}}",
+					"protocol": "https",
+					"host": [
+						"api",
+						"trello",
+						"com"
+					],
+					"path": [
+						"1",
+						"boards",
+						"{{boardID}}"
+					],
+					"query": [
+						{
+							"key": "key",
+							"value": "{{trelloKey}}"
+						},
+						{
+							"key": "token",
+							"value": "{{trelloToken}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "请求特定看板，看是否删除",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "1a2d3448-12fd-41ce-b650-15deb77f4cdc",
+						"exec": [
+							"pm.test(\"Status code is 404 Not Found\", function () {",
+							"    pm.response.to.have.status(404);",
+							"});",
+							"",
+							"pm.globals.unset(\"boardID\");"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://api.trello.com/1/boards/{{boardID}}?key={{trelloKey}}&token={{trelloToken}}",
+					"protocol": "https",
+					"host": [
+						"api",
+						"trello",
+						"com"
+					],
+					"path": [
+						"1",
+						"boards",
+						"{{boardID}}"
+					],
+					"query": [
+						{
+							"key": "key",
+							"value": "{{trelloKey}}"
+						},
+						{
+							"key": "token",
+							"value": "{{trelloToken}}"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"protocolProfileBehavior": {}
+}
